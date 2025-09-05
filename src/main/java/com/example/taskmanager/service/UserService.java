@@ -3,6 +3,7 @@ package com.example.taskmanager.service;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +13,11 @@ import java.util.Optional;
 public class UserService {
 
     public final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository=userRepository;
-        this.passwordEncoder=new BCryptPasswordEncoder();
+        this.passwordEncoder= passwordEncoder;
     }
 
     public List<User> getAllUsers(){

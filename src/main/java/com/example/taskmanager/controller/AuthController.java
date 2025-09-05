@@ -1,8 +1,10 @@
 package com.example.taskmanager.controller;
 
+import com.example.taskmanager.dto.LoginRequest;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.security.JwtUtil;
 import com.example.taskmanager.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,14 +25,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user){
+    public User register(@Valid @RequestBody User user){
         return userService.createUser(user);
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody User user){
-        User foundUser = userService.getUserByUsername(user.getUsername()).orElseThrow(()-> new RuntimeException("Invalide credentials"));
-        if(!userService.checkPassword(user.getPassword(), foundUser.getPassword())){
+    public Map<String, String> login(@Valid @RequestBody LoginRequest request){
+        User foundUser = userService.getUserByUsername(request.getUsername()).orElseThrow(()-> new RuntimeException("Invalide credentials"));
+        if(!userService.checkPassword(request.getPassword(), foundUser.getPassword())){
             throw new RuntimeException("Invalid credentials");
         }
         String token = jwtUtil.generationToken(foundUser.getUsername());
