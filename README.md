@@ -30,13 +30,23 @@ Elle inclut la sécurité avec JWT, la documentation via Swagger/OpenAPI, et un 
 mvn clean install
 mvn spring-boot:run
 
+---
+
 L’API sera dispo sur http://localhost:8081.
 
-🐳 Avec Docker
+---
 
-Construis l’image : docker build -t taskmanager-api .
+## 🐳 Avec Docker
 
-Lance avec Docker Compose (app + PostgreSQL) : docker-compose up --build
+### Construis l’image :
+
+docker build -t taskmanager-api .
+
+### Lance avec Docker Compose (app + PostgreSQL) :
+
+docker-compose up --build
+
+---
 
 🛠️ Endpoints principaux
 
