@@ -29,6 +29,7 @@ Elle inclut la sécurité avec JWT, la documentation via Swagger/OpenAPI, et un 
 ```bash
 mvn clean install
 mvn spring-boot:run
+```
 
 ---
 
@@ -46,50 +47,62 @@ docker build -t taskmanager-api .
 
 docker-compose up --build
 
----
+--- 
 
-🛠️ Endpoints principaux
+## 🛠️ Endpoints principaux
 
-Exemple avec curl :
+### Exemple avec curl :
 
-🔑 Auth
+#### 🔑 Auth
 
-Signup :
+##### Signup :
 
 curl -X POST http://localhost:8080/auth/signup \
   -H "Content-Type: application/json" \
   -d '{"username":"max","password":"1234"}'
 
-Login :
+##### Login :
 
 curl -X POST http://localhost:8080/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"max","password":"1234"}'
 
-✅ Tâches
+---
 
-Lister toutes les tâches :
+## ✅ Tâches
+
+### Lister toutes les tâches :
 
 curl -X GET http://localhost:8080/tasks -H "Authorization: Bearer <TOKEN>"
 
-Créer une tâche :
+### Créer une tâche :
 
 curl -X POST http://localhost:8080/tasks \
   -H "Authorization: Bearer <TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"title":"Faire les courses","description":"Acheter du lait","status":"OPEN"}'
 
-📖 Swagger UI
+---
+
+## 📖 Swagger UI
 
 Une fois l’app démarrée, accède à la doc API ici : http://localhost:8081/swagger-ui.html
 
-🧪 Tests
+---
 
-Unitaires : mvn test
+## 🧪 Tests
 
-Intégration avec Testcontainers (PostgreSQL) : Lance automatiquement un vrai container PostgreSQL pendant les tests.
+### Unitaires : 
 
-🐙 CI/CD (GitHub Actions)
+mvn test
+
+### Intégration avec Testcontainers (PostgreSQL) : 
+
+Lance automatiquement un vrai container PostgreSQL pendant les tests.
+
+---
+
+## 🐙 CI/CD (GitHub Actions)
 
 - Build du projet
 - Lancement des tests
