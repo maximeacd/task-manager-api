@@ -1,5 +1,6 @@
 package com.example.taskmanager.service;
 
+import com.example.taskmanager.dto.RegisterRequest;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +25,7 @@ public class UserService {
     }
 
     public User getUserById(Long id){
-        return userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found with id"+id));
+        return userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found with id: "+id));
     }
 
     public User createUser(User user){
@@ -41,5 +42,16 @@ public class UserService {
 
     public boolean checkPassword(String rawPassword, String encodedPassword){
         return passwordEncoder.matches(rawPassword,encodedPassword);
+    }
+
+    public User registerUser(RegisterRequest request){
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(request.getRoles());
+        return userRepository.save(user);
     }
 }

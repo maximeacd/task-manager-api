@@ -59,6 +59,6 @@ public class TaskController {
             @Valid @RequestParam(required = false) String search){
         Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page,size, sort);
-        return taskService.getTasks(status, dueDate, search,pageable);
+        return taskService.getTasks(status, dueDate, search, pageable);
     }
 }

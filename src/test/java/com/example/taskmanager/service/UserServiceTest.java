@@ -157,7 +157,7 @@ public class UserServiceTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> userService.getUserById(1L));
 
-        assertTrue(ex.getMessage().contains("User not found with id1"));
+        assertTrue(ex.getMessage().contains("User not found with id: 1"));
     }
 
 

@@ -1,7 +1,9 @@
 package com.example.taskmanager.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Set;
@@ -10,6 +12,8 @@ import java.util.Set;
 @Table(name="users")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -26,12 +30,4 @@ public class User {
     @CollectionTable(name="user_roles",joinColumns = @JoinColumn(name="user_id"))
     @Column(name="role")
     private Set<String> roles;
-
-    public User(){}
-
-    public User(String username, String password, Set<String> roles){
-        this.username=username;
-        this.password=password;
-        this.roles=roles;
-    }
 }

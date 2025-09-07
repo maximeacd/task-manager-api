@@ -78,7 +78,7 @@ public class TaskServiceTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> taskService.getTaskById(1L));
 
-        assertTrue(ex.getMessage().contains("Task not found with id1"));
+        assertTrue(ex.getMessage().contains("Task not found with id: 1"));
     }
 
     @Test

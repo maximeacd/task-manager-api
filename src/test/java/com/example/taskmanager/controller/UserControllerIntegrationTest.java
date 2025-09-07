@@ -1,6 +1,7 @@
 package com.example.taskmanager.controller;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.UserRepository;
+import com.example.taskmanager.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,27 +27,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties="spring.security.enabled=false")
 public class UserControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15")
+    public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
             .withDatabaseName("testdb")
             .withUsername("postgres")
             .withPassword("postgres");
 
+    static {
+        postgres.start();
+    }
+
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry){
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
     }
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp(){
@@ -61,7 +69,11 @@ public class UserControllerIntegrationTest {
 
         userRepository.save(user);
 
-        mockMvc.perform(get("/api/users"))
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
+
+        mockMvc.perform(get("/api/users")
+                .header("Authorization", jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].username").value("maxime"));
     }
@@ -72,7 +84,10 @@ public class UserControllerIntegrationTest {
         user.setUsername("maxime");
         user.setPassword("mypassword");
 
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
         mockMvc.perform(post("/api/users")
+                .header("Authorization", jwtToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
@@ -87,14 +102,20 @@ public class UserControllerIntegrationTest {
 
         user=userRepository.save(user);
 
-        mockMvc.perform(get("/api/users/{id}", user.getId()))
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
+        mockMvc.perform(get("/api/users/id/{id}", user.getId())
+                .header("Authorization", jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("maxime"));
     }
 
     @Test
     void getUserById_ShouldReturnNotFound() throws Exception{
-        mockMvc.perform(get("/api/users/{id}", 999L))
-                .andExpect(status().is4xxClientError());
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
+        mockMvc.perform(get("/api/users/id/{id}", 999L)
+                .header("Authorization", jwtToken))
+                .andExpect(status().isNotFound());
     }
 }

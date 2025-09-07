@@ -2,9 +2,11 @@ package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.repository.TaskRepository;
+import com.example.taskmanager.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +15,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,30 +32,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 @TestPropertySource(properties="spring.security.enabled=false")
 public class TaskControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("testdb")
-            .withUsername("postgres")
-            .withPassword("postgres");
+    public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+            .withDatabaseName("test")
+            .withUsername("user")
+            .withPassword("password");
+
+    static {
+        postgres.start();
+    }
 
     @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry){
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+    static void configureProperties(DynamicPropertyRegistry registry){
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
     }
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private TaskRepository taskRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp(){
@@ -61,7 +73,9 @@ public class TaskControllerIntegrationTest {
 
     @Test
     void getAllTasks_ShouldReturnEmptyList() throws Exception {
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
         mockMvc.perform(get("/api/tasks")
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
@@ -75,7 +89,10 @@ public class TaskControllerIntegrationTest {
         task.setStatus("open");
         task.setDueDate(LocalDate.now().plusDays(3));
 
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
         mockMvc.perform(post("/api/tasks")
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(task)))
                 .andExpect(status().isOk())
@@ -92,7 +109,10 @@ public class TaskControllerIntegrationTest {
         task.setDueDate(LocalDate.now().plusDays(2));
         task = taskRepository.save(task);
 
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
         mockMvc.perform(get("/api/tasks/{id}", task.getId())
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Task1"));
@@ -100,7 +120,11 @@ public class TaskControllerIntegrationTest {
 
     @Test
     void getTaskById_ShouldReturn404_WhenNotFound() throws Exception {
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
+
         mockMvc.perform(get("/api/tasks/{id}", 999L)
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -117,7 +141,10 @@ public class TaskControllerIntegrationTest {
         task.setTitle("Updated Task");
         task.setStatus("done");
 
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
         mockMvc.perform(put("/api/tasks/{id}", task.getId())
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(task)))
                 .andExpect(status().isOk())
@@ -134,14 +161,20 @@ public class TaskControllerIntegrationTest {
         task.setDueDate(LocalDate.now());
         task = taskRepository.save(task);
 
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
         mockMvc.perform(delete("/api/tasks/{id}", task.getId())
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     void deleteTask_ShouldReturn404_WhenNotFound() throws Exception {
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
         mockMvc.perform(delete("/api/tasks/{id}", 999L)
+                        .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }

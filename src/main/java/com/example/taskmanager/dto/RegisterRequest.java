@@ -1,8 +1,11 @@
 package com.example.taskmanager.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class RegisterRequest {
@@ -15,6 +18,6 @@ public class RegisterRequest {
     @Size(min=6, message="Password must be at most 6 characters")
     private String password;
 
-    @NotBlank(message="Roles cannot be empty")
-    private String roles;
+    @NotEmpty(message="Roles cannot be empty")
+    private Set<String> roles;
 }

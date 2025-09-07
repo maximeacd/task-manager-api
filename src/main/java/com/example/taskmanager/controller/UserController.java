@@ -2,6 +2,7 @@ package com.example.taskmanager.controller;
 
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,18 +23,18 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id){
+    @GetMapping("/id/{id}")
+    public User getUserById(@Valid @PathVariable Long id){
         return userService.getUserById(id);
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user){
+    public User createUser(@Valid @RequestBody User user){
         return userService.createUser(user);
     }
 
-    @GetMapping("/{username}")
-    public Optional<User> getUserByUsername(@PathVariable String username){
+    @GetMapping("/username/{username}")
+    public Optional<User> getUserByUsername(@Valid @PathVariable String username){
         return userService.getUserByUsername(username);
     }
 }

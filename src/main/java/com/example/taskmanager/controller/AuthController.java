@@ -1,8 +1,8 @@
 package com.example.taskmanager.controller;
 
 import com.example.taskmanager.dto.LoginRequest;
-import com.example.taskmanager.model.User;
-import com.example.taskmanager.security.JwtUtil;
+import com.example.taskmanager.dto.RegisterRequest;
+import com.example.taskmanager.service.AuthService;
 import com.example.taskmanager.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,25 +17,21 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
-    private final JwtUtil jwtUtil;
+    private final AuthService authService;
 
-    public AuthController(UserService userService, JwtUtil jwtUtil){
+    public AuthController(UserService userService, AuthService authService){
         this.userService=userService;
-        this.jwtUtil=jwtUtil;
+        this.authService=authService;
     }
 
     @PostMapping("/register")
-    public User register(@Valid @RequestBody User user){
-        return userService.createUser(user);
+    public String register(@Valid @RequestBody RegisterRequest request){
+        userService.registerUser(request);
+        return "User registered successfully";
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@Valid @RequestBody LoginRequest request){
-        User foundUser = userService.getUserByUsername(request.getUsername()).orElseThrow(()-> new RuntimeException("Invalide credentials"));
-        if(!userService.checkPassword(request.getPassword(), foundUser.getPassword())){
-            throw new RuntimeException("Invalid credentials");
-        }
-        String token = jwtUtil.generationToken(foundUser.getUsername());
-        return Map.of("token", token);
+    public String login(@Valid @RequestBody LoginRequest request){
+        return authService.login(request);
     }
 }
