@@ -1,6 +1,8 @@
 # 📌 Task Manager API  
 
 ![Build](https://github.com/maximeacd/task-manager-api/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://github.com/maximeacd/task-manager-api/actions/workflows/ci.yml/badge.svg)
+
 
 Une API REST développée avec **Spring Boot** permettant de gérer des utilisateurs et des tâches.  
 Elle inclut la sécurité avec JWT, la documentation via Swagger/OpenAPI, et un déploiement containerisé avec Docker.
