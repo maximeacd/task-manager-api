@@ -5,29 +5,29 @@
 ![Java](https://img.shields.io/badge/java-17-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-enabled-blue)
 
-Une API REST développée avec **Spring Boot** permettant de gérer des utilisateurs et des tâches.  
-Elle inclut la sécurité avec JWT, la documentation via Swagger/OpenAPI, et un déploiement containerisé avec Docker.
+**Task Manager API** is a production-ready **Spring Boot** REST API for managing users and tasks.  
+It features JWT authentication, full API documentation via Swagger, unit and integration testing, and containerized deployment with Docker.
 
 ---
 
 ## ✨ Features
 
-- 🔑 **Authentification JWT** (inscription + login)  
-- 👤 **Gestion des utilisateurs** (CRUD)  
-- ✅ **Gestion des tâches** (CRUD + statut + date d’échéance)  
-- 📖 **Documentation API** avec Swagger UI  
-- 🧪 **Tests unitaires** (JUnit + Mockito) et **tests d’intégration** (MockMvc, Testcontainers)  
-- 🐳 **Docker & Docker Compose** pour exécuter l’app et PostgreSQL  
+- 🔑 **Secure JWT Authentication** for user login/signup  
+- 👤 **User Management** with full CRUD operations  
+- ✅ **Task Management** including status tracking and due dates  
+- 📖 **Swagger/OpenAPI Documentation** for easy API exploration  
+- 🧪 **Unit & Integration Testing** with JUnit, Mockito, MockMvc, and Testcontainers  
+- 🐳 **Containerized Deployment** using Docker & Docker Compose 
 
 ---
 
-## ⚡ Lancer en local
+## ⚡ Quick Start
 
-### Avec Maven (sans Docker)
+### Local Setup (Maven)
 
-1. Assure-toi d’avoir **PostgreSQL** qui tourne en local (port `5432` par défaut).  
-2. Configure `application.properties` avec tes identifiants DB.  
-3. Lance :  
+1. Make sure **PostgreSQL** is running locally (default port `5432`).  
+2. Update `application.properties` with your database credentials.  
+3. Run: 
 
 ```bash
 mvn clean install
@@ -36,79 +36,44 @@ mvn spring-boot:run
 
 ---
 
-L’API sera dispo sur http://localhost:8081.
+The API will be available at http://localhost:8081
 
 ---
 
-## 🐳 Avec Docker
+## 🐳 Docker Setup
 
-### Construis l’image :
+### Build the image:
 
 docker build -t taskmanager-api .
 
-### Lance avec Docker Compose (app + PostgreSQL) :
+### Run with Docker Compose (app + PostgreSQL):
 
 docker-compose up --build
 
 --- 
 
-## 🛠️ Endpoints principaux
-
-### Exemple avec curl :
-
-#### 🔑 Auth
-
-##### Signup :
-
-curl -X POST http://localhost:8080/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{"username":"max","password":"1234"}'
-
-##### Login :
-
-curl -X POST http://localhost:8080/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"max","password":"1234"}'
-
----
-
-## ✅ Tâches
-
-### Lister toutes les tâches :
-
-curl -X GET http://localhost:8080/tasks -H "Authorization: Bearer <TOKEN>"
-
-### Créer une tâche :
-
-curl -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer <TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Faire les courses","description":"Acheter du lait","status":"OPEN"}'
-
----
-
 ## 📖 Swagger UI
 
-Une fois l’app démarrée, accède à la doc API ici : http://localhost:8081/swagger-ui.html
+Access API documentation at: http://localhost:8081/swagger-ui.html
 
 ---
 
-## 🧪 Tests
+## 🧪 Testing
 
-### Unitaires : 
+### Unit Tests:
 
 mvn test
 
-### Intégration avec Testcontainers (PostgreSQL) : 
+### Integration Tests with Testcontainers:
 
-Lance automatiquement un vrai container PostgreSQL pendant les tests.
+Runs a real PostgreSQL container automatically during tests.
 
 ---
 
 ## 🐙 CI/CD (GitHub Actions)
 
-- Build du projet
-- Lancement des tests
-- Vérification que le Docker build passe
+- Automated build
+- Unit & integration test execution
+- Docker build validation
 
-Voir le badge en haut 👆
+Check the badge above to see the latest status 👆
