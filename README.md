@@ -1,7 +1,6 @@
 # 📌 Task Manager API  
 
 ![Build](https://github.com/maximeacd/task-manager-api/actions/workflows/ci.yml/badge.svg)
-[![Coverage](https://img.shields.io/codecov/c/github/maximeacd/task-manager-api/main.svg)](https://codecov.io/gh/maximeacd/task-manager-api)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Java](https://img.shields.io/badge/java-17-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-enabled-blue)
