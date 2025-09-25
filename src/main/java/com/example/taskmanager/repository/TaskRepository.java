@@ -1,6 +1,6 @@
 package com.example.taskmanager.repository;
 
-import com.example.taskmanager.model.Task;
+import com.example.taskmanager.entity.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

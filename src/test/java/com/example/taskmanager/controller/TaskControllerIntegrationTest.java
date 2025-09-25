@@ -1,6 +1,6 @@
 package com.example.taskmanager.controller;
 
-import com.example.taskmanager.model.Task;
+import com.example.taskmanager.entity.Task;
 import com.example.taskmanager.repository.TaskRepository;
 import com.example.taskmanager.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

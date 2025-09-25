@@ -1,4 +1,4 @@
-package com.example.taskmanager.model;
+package com.example.taskmanager.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -13,8 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="tasks")
-@Getter
-@Setter
 public class Task {
 
     @Id

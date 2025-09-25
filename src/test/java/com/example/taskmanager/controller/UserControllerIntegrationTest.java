@@ -1,5 +1,5 @@
 package com.example.taskmanager.controller;
-import com.example.taskmanager.model.User;
+import com.example.taskmanager.entity.User;
 import com.example.taskmanager.repository.UserRepository;
 import com.example.taskmanager.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
