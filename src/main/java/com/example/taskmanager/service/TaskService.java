@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class TaskService {
@@ -33,8 +32,8 @@ public class TaskService {
         }
     }
 
-    public List<Task> getAllTasks(){
-        return taskRepository.findAll();
+    public Page<Task> getAllTasks(Pageable pageable){
+        return taskRepository.findAll(pageable);
     }
 
     public Task getTaskById(Long id){
@@ -55,6 +54,37 @@ public class TaskService {
     }
 
     public void deleteTask(Long id){
-        taskRepository.deleteById(id);
+        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found for id: "+id));
+        taskRepository.delete(task);
+    }
+
+    public long countTasksByStatus(String status){
+        return taskRepository.countByStatus(status);
+    }
+
+    public Page<Task> findTasksByDueDateAfter(LocalDate dueDate, Pageable pageable){
+        return taskRepository.findByDueDateAfter(dueDate, pageable);
+    }
+
+    public Page<Task> findTasksByDueDateBetween(LocalDate start, LocalDate end, Pageable pageable){
+        return taskRepository.findByDueDateBetween(start, end, pageable);
+    }
+
+    public void deleteByDueDateBefore(LocalDate dueDate){
+        taskRepository.deleteByDueDateBefore(dueDate);
+    }
+
+    public Page<Task> findByTitleContainingIgnoreCase(String keyword, Pageable pageable){
+        return taskRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+    }
+
+    public Page<Task> findByDescriptionContainingIgnoreCase(String keyword, Pageable pageable){
+        return taskRepository.findByDescriptionContainingIgnoreCase(keyword, pageable);
+    }
+
+    public Task updateStatus(Long id, String status){
+        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found for id: "+id));
+        task.setStatus(status);
+        return taskRepository.save(task);
     }
 }

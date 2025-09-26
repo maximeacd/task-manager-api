@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -15,7 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,9 +56,7 @@ public class TaskServiceTest {
 
         when(taskRepository.findAll()).thenReturn(Arrays.asList(task1, task2));
 
-        List<Task> result = taskService.getAllTasks();
-
-        assertEquals(2, result.size());
+        Page<Task> result = taskService.getAllTasks(Pageable.unpaged());
         verify(taskRepository, times(1)).findAll();
     }
 

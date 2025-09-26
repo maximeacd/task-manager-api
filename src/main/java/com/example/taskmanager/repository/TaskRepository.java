@@ -19,13 +19,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Page<Task> findByDueDateAfter(LocalDate dueDate, Pageable pageable);
 
-    Page<Task> findByDueDateBetween(LocalDate start, LocalDate end);
+    Page<Task> findByDueDateBetween(LocalDate start, LocalDate end, Pageable pageable);
 
     void deleteByDueDateBefore(LocalDate dueDate);
 
     Page<Task> findByTitleOrDescription(String title, String description, Pageable pageable);
 
-    Page<Task> findByTitleContainingIgnoreCase(String keyword);
+    Page<Task> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
-    Page<Task> findByDescriptionContainingIgnoreCase(String keyword);
+    Page<Task> findByDescriptionContainingIgnoreCase(String keyword, Pageable pageable);
 }

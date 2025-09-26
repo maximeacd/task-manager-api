@@ -44,7 +44,7 @@ public class UserService {
         return passwordEncoder.matches(rawPassword,encodedPassword);
     }
 
-    public User registerUser(RegisterRequest request){
+    public void registerUser(RegisterRequest request){
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
@@ -52,6 +52,30 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRoles(request.getRoles());
+        userRepository.save(user);
+    }
+
+    public void deleteUserById(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found for id: "+id));
+        userRepository.delete(user);
+    }
+
+    public long countUsers(){
+        return userRepository.count();
+    }
+
+    public boolean isUsernameExists(String username){
+        return userRepository.existsByUsername(username);
+    }
+
+    public void deleteUserByUsername(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found for username: "+username));
+        userRepository.delete(user);
+    }
+
+    public User updatePassword(String username, String newPassword){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found for username: "+username));
+        user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
 }

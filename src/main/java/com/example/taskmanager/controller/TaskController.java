@@ -11,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -24,8 +23,8 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public List<Task> getAllTasks(){
-        return taskService.getAllTasks();
+    public Page<Task> getAllTasks(Pageable pageable){
+        return taskService.getAllTasks(pageable);
     }
 
     @GetMapping("/{id}")
