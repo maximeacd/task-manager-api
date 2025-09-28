@@ -44,17 +44,6 @@ public class UserService {
         return passwordEncoder.matches(rawPassword,encodedPassword);
     }
 
-    public void registerUser(RegisterRequest request){
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRoles(request.getRoles());
-        userRepository.save(user);
-    }
-
     public void deleteUserById(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found for id: "+id));
         userRepository.delete(user);
