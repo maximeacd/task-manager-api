@@ -2,18 +2,12 @@ package com.example.taskmanager.service;
 
 import com.example.taskmanager.entity.User;
 import com.example.taskmanager.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,22 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@Slf4j
-@Testcontainers
 public class UserServiceTest {
-
-    @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("testdb")
-            .withUsername("postgres")
-            .withPassword("postgres");
-
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry){
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-    }
 
     @Mock
     private UserRepository userRepository;
@@ -89,7 +68,7 @@ public class UserServiceTest {
 
         when(userRepository.findByUsername("maxime")).thenReturn(Optional.of(user));
 
-        Optional<User> found = userRepository.findByUsername("maxime");
+        Optional<User> found = userService.getUserByUsername("maxime");
 
         assertTrue(found.isPresent());
         assertEquals("maxime", found.get().getUsername());
@@ -115,7 +94,7 @@ public class UserServiceTest {
 
     @Test
     void checkPassword_ShouldReturnFalse_WhenPasswordDoesNotMatch(){
-        when(userService.checkPassword("my","hashed")).thenReturn(false);
+        when(passwordEncoder.matches("my","hashed")).thenReturn(false);
 
         boolean result = userService.checkPassword("my", "hashed");
 
@@ -160,5 +139,82 @@ public class UserServiceTest {
         assertTrue(ex.getMessage().contains("User not found with id: 1"));
     }
 
+    @Test
+    void deleteUserById_ShouldDelete_WhenExists() {
+        User user = new User();
+        user.setId(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
+        userService.deleteUserById(1L);
+
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void deleteUserById_ShouldThrow_WhenNotFound() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> userService.deleteUserById(1L));
+
+        assertTrue(ex.getMessage().contains("User not found for id"));
+    }
+
+    @Test
+    void deleteUserByUsername_ShouldDelete_WhenExists() {
+        User user = new User();
+        user.setUsername("max");
+        when(userRepository.findByUsername("max")).thenReturn(Optional.of(user));
+
+        userService.deleteUserByUsername("max");
+
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    void deleteUserByUsername_ShouldThrow_WhenNotFound() {
+        when(userRepository.findByUsername("ghost")).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> userService.deleteUserByUsername("ghost"));
+
+        assertTrue(ex.getMessage().contains("User not found for username"));
+    }
+
+    @Test
+    void countUsers_ShouldReturnCount() {
+        when(userRepository.count()).thenReturn(5L);
+        assertEquals(5L, userService.countUsers());
+    }
+
+    @Test
+    void isUsernameExists_ShouldReturnTrueOrFalse() {
+        when(userRepository.existsByUsername("max")).thenReturn(true);
+        when(userRepository.existsByUsername("ghost")).thenReturn(false);
+
+        assertTrue(userService.isUsernameExists("max"));
+        assertFalse(userService.isUsernameExists("ghost"));
+    }
+
+    @Test
+    void updatePassword_ShouldEncodeAndSave_WhenUserExists() {
+        User user = new User();
+        user.setUsername("max");
+        user.setPassword("old");
+
+        when(userRepository.findByUsername("max")).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newpass")).thenReturn("hashed");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User result = userService.updatePassword("max", "newpass");
+
+        assertEquals("hashed", result.getPassword());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updatePassword_ShouldThrow_WhenUserNotFound() {
+        when(userRepository.findByUsername("ghost")).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> userService.updatePassword("ghost", "newpass"));
+        assertTrue(ex.getMessage().contains("User not found for username"));
+    }
 }
