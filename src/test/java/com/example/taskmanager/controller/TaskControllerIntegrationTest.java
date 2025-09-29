@@ -5,7 +5,6 @@ import com.example.taskmanager.repository.TaskRepository;
 import com.example.taskmanager.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 @TestPropertySource(properties="spring.security.enabled=false")
-@Disabled("Integration tests disabled for now")
 public class TaskControllerIntegrationTest {
 
     @Container
@@ -80,7 +78,7 @@ public class TaskControllerIntegrationTest {
                         .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.content.length()").value(0));
     }
 
     @Test
@@ -97,7 +95,7 @@ public class TaskControllerIntegrationTest {
                         .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(task)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Test Task"))
                 .andExpect(jsonPath("$.status").value("open"));
     }
@@ -168,7 +166,7 @@ public class TaskControllerIntegrationTest {
         mockMvc.perform(delete("/api/tasks/{id}", task.getId())
                         .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -178,6 +176,23 @@ public class TaskControllerIntegrationTest {
         mockMvc.perform(delete("/api/tasks/{id}", 999L)
                         .header("Authorization", jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateTask_ShouldReturn404_WhenTaskDoesNotExist() throws Exception {
+        Task task = new Task();
+        task.setTitle("Nonexistent");
+        task.setDescription("Does not exist");
+        task.setStatus("open");
+        task.setDueDate(LocalDate.now().plusDays(1));
+
+        String jwtToken = "Bearer " + jwtUtil.generationToken("testuser");
+
+        mockMvc.perform(put("/api/tasks/{id}", 999L)
+                        .header("Authorization", jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(task)))
                 .andExpect(status().isNotFound());
     }
 }
