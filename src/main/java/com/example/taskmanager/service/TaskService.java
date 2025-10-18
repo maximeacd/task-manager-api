@@ -1,7 +1,9 @@
 package com.example.taskmanager.service;
 
 import com.example.taskmanager.entity.Task;
+import com.example.taskmanager.entity.User;
 import com.example.taskmanager.repository.TaskRepository;
+import com.example.taskmanager.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,9 +14,11 @@ import java.time.LocalDate;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository){
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository){
         this.taskRepository=taskRepository;
+        this.userRepository=userRepository;
     }
 
     public Page<Task> getTasks(String status, LocalDate dueDate, String search, Pageable pageable){
@@ -32,6 +36,11 @@ public class TaskService {
         }
     }
 
+    public Page<Task> getTasksForUser(String username, Pageable pageable){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return taskRepository.findByUser(user, pageable);
+    }
+
     public Page<Task> getAllTasks(Pageable pageable){
         return taskRepository.findAll(pageable);
     }
@@ -40,7 +49,14 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(()-> new RuntimeException("Task not found with id: "+id));
     }
 
-    public Task createTask(Task task){
+    public Task createTask(Task task, String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        task.setUser(user);
+
+        if (task.getStatus() == null || task.getStatus().isBlank()) {
+            task.setStatus("TO_BE_DONE");
+        }
         return taskRepository.save(task);
     }
 
@@ -84,7 +100,12 @@ public class TaskService {
 
     public Task updateStatus(Long id, String status){
         Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found for id: "+id));
+        User existingUser = task.getUser();
+        if(existingUser == null){
+            throw new RuntimeException("Task has no associated user");
+        }
         task.setStatus(status);
+        task.setUser(existingUser);
         return taskRepository.save(task);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -24,8 +25,9 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public Page<Task> getAllTasks(Pageable pageable){
-        return taskService.getAllTasks(pageable);
+    public Page<Task> getAllTasks(Principal principal, Pageable pageable){
+        String username = principal.getName();
+        return taskService.getTasksForUser(username, pageable);
     }
 
     @GetMapping("/{id}")
@@ -35,8 +37,9 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Task createTask(@Valid @RequestBody Task task){
-        return taskService.createTask(task);
+    public Task createTask(@Valid @RequestBody Task task, Principal principal){
+        String username = principal.getName();
+        return taskService.createTask(task, username);
     }
 
     @PutMapping("/{id}")

@@ -1,8 +1,10 @@
 package com.example.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,4 +28,8 @@ public class User {
     @CollectionTable(name="user_roles",joinColumns = @JoinColumn(name="user_id"))
     @Column(name="role")
     private Set<String> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Task> tasks;
 }

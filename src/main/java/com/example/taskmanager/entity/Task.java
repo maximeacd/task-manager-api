@@ -19,6 +19,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @NotBlank(message = "Title cannot be empty")
     @Size(max=100, message = "Title must be at most 100 characters")
     private String title;
@@ -27,7 +31,6 @@ public class Task {
     @Size(max=500, message = "Description must be at most 500 characters")
     private String description;
 
-    @NotBlank(message = "Status cannot be empty")
     private String status;
 
     @FutureOrPresent(message="Due date cannot be in the past")
