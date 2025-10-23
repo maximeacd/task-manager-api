@@ -26,5 +26,13 @@ services:
     ports:
       - "8081:8081"
 
+  frontend:
+    build: ./task-manager-api-frontend
+    container_name: taskmanager-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+
 volumes:
   db_data:
