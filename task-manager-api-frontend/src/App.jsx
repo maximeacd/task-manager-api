@@ -15,13 +15,30 @@ export default function App(){
   return (
     <AuthProvider>
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<PrivateRoute><TasksPage /></PrivateRoute>} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
+        <AuthWrapper>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/tasks" element={<PrivateRoute><TasksPage /></PrivateRoute>} /> 
+            <Route path="/" element={<HomeRedirect/>}/>
+          </Routes>
+        </AuthWrapper>
       </Router>
     </AuthProvider>
   );
+}
+
+function AuthWrapper({children}){
+  const { token } = useContext(AuthContext);
+  return (
+    <>
+    {token && <Navbar/>}
+    {children}
+    </>
+  );
+} 
+
+function HomeRedirect(){
+  const { token } = useContext(AuthContext);
+  return <Navigate to={token ? "/tasks" : "/login"}replace/>
 }

@@ -11,12 +11,12 @@
     text-transform: uppercase;
 }
 
-.toBeDone{
+.toBeDone {
   border-left: 5px solid #219ebc;
   background-color: #e0f7fa;
 }
 
-.inProgress{
+.inProgress {
   border-left: 5px solid #ffb703;
   background-color: #fff8e1;
 }
@@ -34,6 +34,10 @@
   font-size: 1.1rem;
   padding: 2px 4px;
   transition: transform 0.15s ease, color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px; 
 }
 
 .iconBtn:hover {
@@ -42,16 +46,14 @@
 
 .editBtn {
   color: #555 !important;
-  padding: 0 0 ! important;
 }
 
 .editBtn:hover {
-  color: #007bff !important; /* bleu léger */
+  color: #007bff !important; 
 }
 
 .saveBtn {
-  color: #2ecc71 !important; /* vert */
-  padding: 0 0 ! important;
+  color: #2ecc71 !important; 
 }
 
 .saveBtn:hover {
@@ -87,25 +89,37 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
   animation: fadeIn 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .modal h2 {
   margin-bottom: 10px;
   color: #333;
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .modal p {
-  margin: 8px 0;
+  margin: 0;
+  line-height: 1.4;
   color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .modal button {
-  margin-top: 15px;
+  margin-top: 5px;
   background: #2563eb;
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 8px 0;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -125,3 +139,44 @@
   }
 }
 
+.modalField {
+  display: flex;
+  align-items: center; 
+  gap: 8px;         
+  margin-bottom: 12px; 
+}
+
+.modalField input,
+.modalField textarea {
+  flex: 1; 
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  line-height: 1.4;
+}
+
+.statusSelect {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: capitalize;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.statusSelect:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+.statusSelect:focus {
+  outline: 2px solid #2563eb;
+}
+
+.statusSelect:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

@@ -46,7 +46,7 @@ export default function TasksPage(){
         try{
             await axios.patch(`/tasks/${id}/status?status=${newStatus}`);
         } catch (err){
-            console.error("Erreur de mise à jour du statut :", err);
+            console.error("Status update error :", err);
             fetchTasks();
         }
     };
@@ -88,66 +88,80 @@ export default function TasksPage(){
                 task.id === id ? { ...task, status: newStatus} : task
             )
         );
-        console.log("Changement de statut local :", id, "→", newStatus);
+        console.log("Local status update :", id, "→", newStatus);
     };
 
     return (
         <div style={{maxWidth: "600px", margin: "20px auto", textAlign: "-webkit-center", color: "black"}}>
-            <h2 style={{ color: "white" }}>My tasks</h2>
 
-            <div>                
-            <input
-                type="text"
-                placeholder={searchTitle === "" ? (isFocused ? "" : "🔍 Search by title...") : ""}
-                value={searchTitle}
-                onChange={(e) => setSearchTitle(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+            <button 
+                onClick={() => setShowModal(true)}
+                className={styles.primaryBtn}
+            >
+                    New Task
+            </button>
+
+            <div
                 style={{
-                    width: "70%",
-                    padding: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
                     marginTop: "15px",
-                    borderRadius: "6px",
-                    border: "1px solid #ccc",
-                    fontSize: "14px",
+                    flexWrap: "wrap",
+                    justifyContent: "center", 
                 }}
-            />
-            {searchTitle && (
-                <button
-                    onClick={() => setSearchTitle("")}
-                    style={{
-                    marginLeft: "5px",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "white",
-                    fontSize: "16px",
-                    }}
                 >
-                    ✖️
-                </button>
-                )}        
+                {/* input + croix */}
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                    <input
+                    type="text"
+                    placeholder={
+                        searchTitle === "" ? (isFocused ? "" : "🔍 Search by title...") : ""
+                    }
+                    value={searchTitle}
+                    onChange={(e) => setSearchTitle(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    style={{
+                        padding: "8px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                        fontSize: "14px",
+                    }}
+                    />
+                    {searchTitle && (
+                    <button
+                        onClick={() => setSearchTitle("")}
+                        style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "white",
+                        fontSize: "16px",
+                        lineHeight: "1",
+                        }}
+                    >
+                        ✖️
+                    </button>
+                    )}
+                </div>
 
-            <button onClick={() => setShowModal(true)}>New Task</button>
-            
-            </div>
-
-            <div style={{marginTop:"15px"}}>
-                <label style={{color: "white", marginRight: "8px"}}>Sort by due date:</label>
+                <label style={{ color: "white" }}>Sort by due date:</label>
                 <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
                     style={{
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
+                    padding: "5px 10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    minWidth: "120px",
                     }}
                 >
                     <option value="none">None</option>
                     <option value="asc">Ascending</option>
                     <option value="desc">Descending</option>
                 </select>
-            </div>
+                </div>
 
             {showModal && (
                 <div className={styles.modalOverlayStyle}
@@ -205,10 +219,10 @@ export default function TasksPage(){
                                     paddingBottom: "5px",
                                     color:
                                     section.label === "IN PROGRESS"
-                                        ? "#ffb703" // jaune/orange
+                                        ? "#ffb703" 
                                         : section.label === "TO BE DONE"
-                                        ? "#219ebc" // bleu
-                                        : "#38b000" // vert
+                                        ? "#219ebc" 
+                                        : "#38b000" 
                                 }}>
                         {section.label} ({section.list.length})
                     </h3>

@@ -9,14 +9,12 @@ export default function TaskCard({ task, onDelete, fetchTasks, onChangeStatus, o
   const [editField, setEditField] = useState(null);
   const [editedValue, setEditedValue] = useState("");
 
-const handleStart = () => onChangeStatus(task.id, "IN_PROGRESS");
-
-const handleDone = () => onChangeStatus(task.id, "DONE");
-
 const handleEditClick = (field, currentValue) => {
     setEditField(field);
     setEditedValue(currentValue || "");
 };
+
+const isEditable = task.status !== "DONE";
 
 const handleSave = async () => {
     try {
@@ -31,11 +29,23 @@ const handleSave = async () => {
         setShowModal(false);
         if(fetchTasks) await fetchTasks();
     } catch (err) {
-        console.error("Erreur lors de la mise à jour :", err);
+        console.error("Update error :", err);
     } finally {
         setIsUpdating(false);
     }
 };
+
+const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setIsUpdating(true);
+    try{
+        await onChangeStatus(task.id, newStatus);
+    }catch (err) {
+        console.error("Status update error :", err);
+    } finally {
+        setIsUpdating(false);
+    }
+}
 
 const statusClass =
     task.status === "TO_BE_DONE"
@@ -44,105 +54,156 @@ const statusClass =
         ? styles.inProgress
         :styles.done;
 
-  return (
-    <>
-      <div className={`${styles.card} ${statusClass}`}>
-        <span>
-            {task.title}
-            {task.dueDate && (
-                <span style={{ fontWeight: "normal", color: "#555" }}>
-                    {" "}({task.dueDate})
-                </span>
-            )}
+const getAvailableStatusOptions = () => {
+    switch (task.status) {
+        case "TO_BE_DONE":
+            return ["TO_BE_DONE", "IN_PROGRESS"];
+        case "IN_PROGRESS":
+            return ["TO_BE_DONE", "IN_PROGRESS", "DONE"];
+        default:
+            return [];
+    }
+};
+
+return (
+<>
+    <div className={`${styles.card} ${statusClass}`}>
+    <span>
+        {task.title}
+        {task.dueDate && (
+        <span style={{ fontWeight: "normal", color: "#555" }}>
+            {" "}({task.dueDate})
         </span>
-        <div>
-            {task.status === "TO_BE_DONE" && (
+        )}
+    </span>
+
+    <div>
+        {task.status !== "DONE" && (
+        <select
+            value={task.status}
+            onChange={handleStatusChange}
+            disabled={isUpdating}
+            className={styles.statusSelect}
+        >
+            {getAvailableStatusOptions().map((status) => (
+            <option key={status} value={status}>
+                {status.replace(/_/g, " ")}
+            </option>
+            ))}
+        </select>
+        )}
+
+        <button onClick={() => setShowModal(true)}>➕</button>
+        <button onClick={onDelete}>🗑️</button>
+    </div>
+    </div>
+
+    {showModal && (
+    <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <h2>
+            {editField === "title" ? (
+            <>
+                <input
+                type="text"
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                />
                 <button
-                    onClick={handleStart}
-                    disabled={isUpdating}
-                    className={styles.startBtn}
+                onClick={handleSave}
+                disabled={isUpdating}
+                className={`${styles.iconBtn} ${styles.saveBtn}`}
                 >
-                    {isUpdating ? "..." : "▶️ Start"}
+                💾
                 </button>
-            )}
-            {task.status === "IN_PROGRESS" && (
+            </>
+            ) : (
+            <>
+                {task.title}{" "}
+                {isEditable && (
                 <button
-                onClick={handleDone}
-                className={styles.startBtn}
+                    onClick={() => handleEditClick("title", task.title)}
+                    className={`${styles.iconBtn} ${styles.editBtn}`}
                 >
-                    ✅ Done
+                    ✏️
                 </button>
+                )}
+            </>
             )}
-            <button onClick={() => setShowModal(true)}>➕</button>
-            <button onClick={onDelete}>🗑️</button>
+        </h2>
+
+        <p>
+            <strong>Description:</strong>{" "}
+            {editField === "description" ? (
+            <>
+                <textarea
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                rows="3"
+                />
+                <button
+                onClick={handleSave}
+                disabled={isUpdating}
+                className={`${styles.iconBtn} ${styles.saveBtn}`}
+                >
+                💾
+                </button>
+            </>
+            ) : (
+            <>
+                {task.description}{" "}
+                {isEditable && (
+                <button
+                    onClick={() => handleEditClick("description", task.description)}
+                    className={`${styles.iconBtn} ${styles.editBtn}`}
+                >
+                    ✏️
+                </button>
+                )}
+            </>
+            )}
+        </p>
+
+        <p>
+            <strong>Due date:</strong>{" "}
+            {editField === "dueDate" ? (
+            <>
+                <input
+                type="date"
+                value={editedValue || ""}
+                onChange={(e) => setEditedValue(e.target.value)}
+                />
+                <button
+                onClick={handleSave}
+                disabled={isUpdating}
+                className={`${styles.iconBtn} ${styles.saveBtn}`}
+                >
+                💾
+                </button>
+            </>
+            ) : (
+            <>
+                {task.dueDate || "-"}{" "}
+                {isEditable && (
+                <button
+                    onClick={() => handleEditClick("dueDate", task.dueDate)}
+                    className={`${styles.iconBtn} ${styles.editBtn}`}
+                >
+                    ✏️
+                </button>
+                )}
+            </>
+            )}
+        </p>
+
+        <p>
+            <strong>Status:</strong> {task.status}
+        </p>
+
+        <button onClick={() => setShowModal(false)}>Close</button>
         </div>
-      </div>
-
-      {showModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <h2>
-                {editField === "title" ? (
-                    <>
-                        <input
-                            type="text"
-                            value={editedValue}
-                            onChange={e => setEditedValue(e.target.value)}
-                    />
-                    <button onClick={handleSave} disabled={isUpdating} className={`${styles.iconBtn} ${styles.saveBtn}`}>💾</button>
-                    </>
-                ) : (
-                    <>
-                        {task.title}{" "}
-                        <button onClick={() => handleEditClick("title", task.title)} className={`${styles.iconBtn} ${styles.editBtn}`}>✏️</button>
-                    </>
-                )}
-            </h2>
-
-            <p>
-                <strong>Description:</strong> {" "}
-                {editField === "description" ? (
-                <>
-                    <textarea
-                        value={editedValue}
-                        onChange={e => setEditedValue(e.target.value)}
-                        rows="3"
-                    />
-                    <button onClick={handleSave} disabled={isUpdating} className={`${styles.iconBtn} ${styles.saveBtn}`}>💾</button>
-                    </>
-                ) : (
-                    <>
-                        {task.description}{" "}
-                        <button onClick={() => handleEditClick("description", task.description)} className={`${styles.iconBtn} ${styles.editBtn}`}>✏️</button>
-                    </>
-                )}
-            </p>
-
-            <p>
-                <strong>Due date:</strong> {" "}
-                {editField === "dueDate" ? (
-                    <>
-                        <input
-                            type="date"
-                            value={editedValue || ""}
-                            onChange={e => setEditedValue(e.target.value)}
-                        />
-                        <button onClick={handleSave} disabled={isUpdating} className={`${styles.iconBtn} ${styles.saveBtn}`}>💾</button>
-                        </>
-                ) : (
-                    <>
-                        {task.dueDate || "-"}{" "}
-                        <button onClick={() => handleEditClick("dueDate", task.dueDate)} className={`${styles.iconBtn} ${styles.editBtn}`}>✏️</button>
-                        </>
-                )}
-            </p>
-
-            <p><strong>Status:</strong> {task.status}</p>
-            
-            <button onClick={() => setShowModal(false)}>Fermer</button>
-          </div>
-        </div>
-      )}
+    </div>
+    )}
     </>
   );
 }
