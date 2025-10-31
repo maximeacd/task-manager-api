@@ -5,7 +5,12 @@
 ![Java](https://img.shields.io/badge/java-17-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-enabled-blue)
 
-**Task Manager API** is a production-ready **Spring Boot** REST API for managing users and tasks.  
+---
+
+## REST API allowing users to manage tasks with authentication, due-dates and status tracking.
+
+**Task Manager API** is a production-ready **Spring Boot** REST API for managing users and tasks.
+
 It features JWT authentication, full API documentation via Swagger, unit and integration testing, and containerized deployment with Docker.
 
 ---
@@ -44,17 +49,23 @@ The API will be available at http://localhost:8081
 
 ### Build the image:
 
-docker build -t taskmanager-api .
+docker-compose build
 
 ### Run with Docker Compose (app + PostgreSQL):
 
-docker-compose up --build
+docker-compose up -d
 
 --- 
 
 ## 📖 Swagger UI
 
 Access API documentation at: http://localhost:8081/swagger-ui.html
+
+<img width="1478" height="777" alt="image" src="https://github.com/user-attachments/assets/30170010-8bb3-4b3e-983e-80462a6a363f" />
+Task controller example
+
+<img width="1165" height="833" alt="image" src="https://github.com/user-attachments/assets/797ea70f-a4d6-4728-b99d-45b18d80108b" />
+Creating a task example
 
 ---
 
@@ -77,3 +88,13 @@ Runs a real PostgreSQL container automatically during tests.
 - Docker build validation
 
 Check the badge above to see the latest status 👆
+
+## What I did 
+
+- Designed and implemented the full REST API using Spring Boot with a PostgreSQL backend.
+- Developed user authentication and authorization module with JWT.
+- Created all CRUD endpoints for task management, including filtering and grouping functionality.
+- Wrote unit and integration tests using JUnit and Testcontainers.
+- Dockerized the application and created a docker-compose setup for local development.
+- Configured CI/CD pipeline with GitHub Actions to run tests on push.
+- Optimized API performance and error handling for robust production-ready behavior.
