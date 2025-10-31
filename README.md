@@ -7,8 +7,6 @@
 
 ---
 
-## REST API allowing users to manage tasks with authentication, due-dates and status tracking.
-
 **Task Manager API** is a production-ready **Spring Boot** REST API for managing users and tasks.
 
 It features JWT authentication, full API documentation via Swagger, unit and integration testing, and containerized deployment with Docker.
@@ -64,8 +62,10 @@ Access API documentation at: http://localhost:8081/swagger-ui.html
 <img width="1478" height="777" alt="image" src="https://github.com/user-attachments/assets/30170010-8bb3-4b3e-983e-80462a6a363f" />
 Task controller example
 
+
 <img width="1165" height="833" alt="image" src="https://github.com/user-attachments/assets/797ea70f-a4d6-4728-b99d-45b18d80108b" />
 Creating a task example
+
 
 ---
 
@@ -89,7 +89,7 @@ Runs a real PostgreSQL container automatically during tests.
 
 Check the badge above to see the latest status 👆
 
-## What I did 
+## ✅ What I did 
 
 - Designed and implemented the full REST API using Spring Boot with a PostgreSQL backend.
 - Developed user authentication and authorization module with JWT.
