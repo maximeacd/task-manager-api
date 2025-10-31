@@ -24,6 +24,29 @@ It features JWT authentication, full API documentation via Swagger, unit and int
 
 ---
 
+## 🖥️ Frontend
+The frontend of the Task Manager application is built with React (Vite) and interacts with the Spring Boot backend through REST API calls.
+
+✨ Available Features
+- 🔐 User authentication – Login and registration
+- 📝 Task creation
+- 🔍 Search bar to filter tasks by title
+- 📅 Sort by due date
+- 🗂️ Task categorization by status (To be done, In progress, Done)
+- 🔄 Change task status
+- 🗑️ Delete tasks
+- ✏️ Edit existing tasks
+- 📖 View detailed task information
+
+<img width="1914" height="882" alt="image" src="https://github.com/user-attachments/assets/fcbd48d2-1367-4fc9-8065-bcf2481a7cca" />
+
+💡 Technologies Used
+- React + Vite / CRA
+- CSS Modules for component-based styling
+- Axios for API communication
+- State management with useState and useEffect
+
+
 ## ⚡ Quick Start
 
 ### Local Setup (Maven)
