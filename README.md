@@ -87,7 +87,7 @@ Task controller example
 
 
 <img width="1165" height="833" alt="image" src="https://github.com/user-attachments/assets/797ea70f-a4d6-4728-b99d-45b18d80108b" />
-Creating a task example
+Task creation example
 
 
 ---
